@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструкции по обновлению системы смет</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 {
+            color: #0066cc;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 10px 15px;
+            margin: 20px 0;
+        }
+        .step {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+        }
+        .step h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Инструкции по обновлению системы смет</h1>
+    
+    <div class="info">
+        <strong>Обновлено:</strong> 11 июля 2025 г.<br>
+        <strong>Версия:</strong> 2.0
+    </div>
+    
+    <h2>Обзор изменений</h2>
+    
+    <p>В этом обновлении исправлены следующие проблемы:</p>
+    
+    <ol>
+        <li><strong>Ошибка с библиотекой axios</strong> - добавлена совместимость без необходимости загружать axios</li>
+        <li><strong>Дублирующиеся кнопки</strong> - улучшен алгоритм очистки дублирующихся элементов управления</li>
+        <li><strong>Дублирующиеся файлы</strong> - оптимизирована структура файлов для уменьшения дублирования</li>
+        <li><strong>Система формул</strong> - унифицирована система расчета формул и итогов</li>
+    </ol>
+    
+    <div class="warning">
+        <strong>Внимание!</strong> Перед внесением изменений рекомендуется создать резервную копию файлов проекта.
+    </div>
+    
+    <h2>Пошаговая инструкция по обновлению</h2>
+    
+    <div class="step">
+        <h3>Шаг 1: Добавление новых файлов</h3>
+        <p>Скопируйте следующие файлы в указанные директории:</p>
+        <pre>
+- public/js/http-client-adapter.js
+- public/js/estimates/axios-patch.js
+- public/js/estimates/formula-system-integrator.js
+- public/js/estimates/index.js (обновленная версия)
+- public/css/estimates/estimates.css</pre>
+    </div>
+    
+    <div class="step">
+        <h3>Шаг 2: Обновление HTML шаблонов</h3>
+        <p>Найдите в шаблонах (обычно в resources/views) все места, где подключаются скрипты для смет, и замените на:</p>
+        <pre>&lt;script src="{{ asset('js/estimates/index.js') }}"&gt;&lt;/script&gt;</pre>
+        <p>Добавьте также подключение стилей в секцию &lt;head&gt;:</p>
+        <pre>&lt;link rel="stylesheet" href="{{ asset('css/estimates/estimates.css') }}"&gt;</pre>
+    </div>
+    
+    <div class="step">
+        <h3>Шаг 3: Удаление дублирующихся файлов</h3>
+        <p>Запустите скрипт очистки дублирующихся файлов:</p>
+        <pre>cleanup_duplicate_files.bat</pre>
+        <p>Или PowerShell-скрипт для создания символических ссылок:</p>
+        <pre>.\cleanup_duplicate_files.ps1 -Force</pre>
+    </div>
+    
+    <div class="step">
+        <h3>Шаг 4: Проверка работоспособности</h3>
+        <p>Проверьте работу сметы по адресу:</p>
+        <pre>https://remont/partner/estimates/37/edit</pre>
+        <p>Убедитесь, что:</p>
+        <ul>
+            <li>Смета загружается без ошибок</li>
+            <li>Кнопка сохранения работает</li>
+            <li>Формулы рассчитываются корректно</li>
+            <li>Отсутствуют дублирующиеся кнопки</li>
+        </ul>
+    </div>
+    
+    <h2>Решение проблем</h2>
+    
+    <h3>Если возникает ошибка "Библиотека axios не найдена"</h3>
+    <p>Убедитесь, что файл <code>http-client-adapter.js</code> загружается до других скриптов. Проверьте наличие ошибок загрузки скриптов в консоли браузера (F12).</p>
+    
+    <h3>Если дублируются кнопки сохранения</h3>
+    <p>Проверьте, что скрипт <code>cleanup-duplicate-buttons.js</code> загружается правильно. Вы можете вручную вызвать функцию очистки в консоли браузера:</p>
+    <pre>window.cleanupDuplicateButtons();</pre>
+    
+    <h3>Если не работают формулы</h3>
+    <p>Проверьте, что скрипт <code>formula-system-integrator.js</code> загружается до других скриптов формул. Вы можете вручную инициализировать систему формул в консоли браузера:</p>
+    <pre>window.UnifiedFormulaSystem.init();</pre>
+    
+    <h2>Техническая документация</h2>
+    
+    <p>Подробная техническая документация содержится в файле <code>SYSTEM_IMPROVEMENTS.md</code> в корне проекта.</p>
+</body>
+</html>

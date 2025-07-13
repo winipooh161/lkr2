@@ -1,0 +1,431 @@
+/**
+ * Стили для редактора смет
+ * Версия: 3.0
+ */
+
+.estimate-editor {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Панель инструментов */
+.editor-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-xs {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    line-height: 1.2;
+}
+
+/* Основная область редактирования */
+.editor-content {
+    max-height: 70vh;
+    overflow: auto;
+    position: relative;
+}
+
+.table-wrapper {
+    min-width: 100%;
+    overflow-x: auto;
+}
+
+/* Таблица сметы */
+.estimate-table {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.estimate-table th {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding: 8px 4px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.estimate-table td {
+    padding: 4px;
+    vertical-align: middle;
+    border-color: #dee2e6;
+}
+
+/* Строки разделов */
+.section-row {
+    background-color: #d1ecf1 !important;
+}
+
+.section-row td {
+    font-weight: 600;
+    padding: 8px 4px;
+}
+
+.section-title {
+    color: #0c5460;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.section-title:hover {
+    text-decoration: underline;
+}
+
+/* Строки элементов */
+.item-row:hover {
+    background-color: #f8f9fa;
+}
+
+.item-row.table-warning {
+    background-color: #fff3cd !important;
+}
+
+/* Ячейки */
+.cell-input {
+    border: none;
+    background: transparent;
+    padding: 2px 4px;
+    width: 100%;
+    font-size: 0.875rem;
+}
+
+.cell-input:focus {
+    background: #fff;
+    border: 1px solid #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.readonly-cell {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-weight: 500;
+    text-align: right;
+    padding: 6px 8px;
+}
+
+/* Кнопки действий */
+.btn-group-vertical {
+    gap: 2px;
+}
+
+.section-menu-btn,
+.item-menu-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+
+.section-menu-btn:hover,
+.item-menu-btn:hover {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* Итоги */
+.editor-totals {
+    padding: 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.totals-section {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.totals-section h6 {
+    margin-bottom: 8px;
+    color: #495057;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.totals-section .d-flex {
+    margin-bottom: 4px;
+    font-size: 0.875rem;
+}
+
+.totals-section .d-flex:last-child {
+    margin-bottom: 0;
+    padding-top: 4px;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Индикаторы статуса */
+#statusIndicator {
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+/* Контекстные меню */
+.context-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 180px;
+    overflow: hidden;
+}
+
+.context-menu-item {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.context-menu-item:hover {
+    background-color: #f8f9fa;
+}
+
+.context-menu-item.danger:hover {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.context-menu-divider {
+    height: 1px;
+    background: #dee2e6;
+    margin: 4px 0;
+}
+
+/* Модальные окна */
+.modal-content {
+    border-radius: 8px;
+}
+
+.modal-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Формы */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Уведомления */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    min-width: 300px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Загрузка */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .editor-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .toolbar-left,
+    .toolbar-right {
+        justify-content: center;
+    }
+    
+    .editor-content {
+        max-height: 60vh;
+    }
+    
+    .estimate-table {
+        font-size: 0.75rem;
+    }
+    
+    .estimate-table th,
+    .estimate-table td {
+        padding: 2px;
+    }
+    
+    .cell-input {
+        font-size: 0.75rem;
+    }
+    
+    .editor-totals .row > .col-md-6 {
+        margin-bottom: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .estimate-table th,
+    .estimate-table td {
+        padding: 1px;
+        font-size: 0.7rem;
+    }
+    
+    .btn-xs {
+        padding: 1px 3px;
+        font-size: 0.65rem;
+    }
+    
+    .section-menu-btn,
+    .item-menu-btn {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Состояния ячеек */
+.cell-error {
+    background-color: #f8d7da !important;
+    border-color: #dc3545 !important;
+}
+
+.cell-modified {
+    background-color: #fff3cd !important;
+}
+
+.cell-calculated {
+    background-color: #d4edda !important;
+}
+
+/* Выделение строк */
+.row-selected {
+    background-color: #e7f3ff !important;
+}
+
+.row-selected .cell-input {
+    background-color: #e7f3ff;
+}
+
+/* Дополнительные утилиты */
+.text-nowrap {
+    white-space: nowrap;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.user-select-none {
+    user-select: none;
+}
+
+/* Скроллбары */
+.editor-content::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.editor-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.editor-content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.editor-content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Печать */
+@media print {
+    .editor-toolbar,
+    .editor-totals {
+        display: none;
+    }
+    
+    .editor-content {
+        max-height: none;
+        overflow: visible;
+    }
+    
+    .estimate-table {
+        font-size: 10px;
+    }
+    
+    .estimate-table th,
+    .estimate-table td {
+        padding: 2px;
+        border: 1px solid #000 !important;
+    }
+    
+    .section-menu-btn,
+    .item-menu-btn {
+        display: none;
+    }
+}

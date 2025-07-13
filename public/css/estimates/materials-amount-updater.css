@@ -1,0 +1,102 @@
+/* Стили для визуальной индикации обновления полей materials_amount */
+
+.field-updated {
+    background-color: #d4edda !important;
+    border-color: #28a745 !important;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
+
+.field-updated:focus {
+    background-color: #d4edda !important;
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25) !important;
+}
+
+/* Анимация для плавного перехода обновления */
+.form-control {
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Индикатор загрузки для полей, которые обновляются */
+.field-loading {
+    background-image: url("data:image/svg+xml,%3csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M8 0V4M8 12V16M3.5 1.5L5.5 3.5M10.5 12.5L12.5 14.5M0 8H4M12 8H16M1.5 12.5L3.5 10.5M12.5 3.5L14.5 1.5' stroke='%236c757d' stroke-width='1'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 16px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Специальные стили для полей суммы */
+#materials_amount.field-updated,
+#work_amount.field-updated,
+#total_amount.field-updated {
+    font-weight: 600;
+}
+
+/* Tooltip для индикации автоматического обновления */
+.auto-updated-tooltip {
+    position: relative;
+}
+
+.auto-updated-tooltip::after {
+    content: "Обновлено автоматически";
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #28a745;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.auto-updated-tooltip.show-tooltip::after {
+    opacity: 1;
+}
+
+/* Стили для уведомлений об успешном обновлении */
+.update-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #28a745;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    z-index: 1050;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.update-notification.show {
+    transform: translateX(0);
+}
+
+.update-notification .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    line-height: 1;
+    margin-left: 10px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.update-notification .close-btn:hover {
+    opacity: 1;
+}

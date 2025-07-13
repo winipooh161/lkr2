@@ -1,0 +1,20 @@
+/**
+ * Исправления для модальных окон в проектах
+ * Предотвращает скрытие форм загрузки файлов
+ */
+
+/* Исправление для скрытия форм в модалках */
+.modal form.d-none {
+    display: block !important;
+}
+
+/* Исправление видимости контейнера прогресса */
+.upload-progress.d-none {
+    display: none !important;
+}
+
+/* Активация кнопок в модальных окнах */
+.modal button[disabled] {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}

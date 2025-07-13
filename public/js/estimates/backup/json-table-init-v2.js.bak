@@ -1,0 +1,496 @@
+/**
+ * Инициализация JSON-редактора смет
+ * Версия: 2.1
+ * Дата: 12.07.2025
+ * Обновлено: Интеграция с расширенной системой формул
+ */
+
+docum            // Отправляем событие инициализации для подключения универсального адаптера
+            document.dispatchEvent(new CustomEvent('jsonTableEditorInitialized', {
+                detail: {
+                    editor: jsonTableEditor,
+                    options: jsonTableEditor.options,
+                    estimateType: jsonTableEditor.options.estimateType
+                }
+            }));
+            
+            // Инициализация расширенной системы формул
+            if (window.enhancedFormulaCalculator) {
+                console.log('✅ Включение расширенного калькулятора формул');
+                
+                // Пересчет формул после загрузки данных
+                setTimeout(() => {
+                    if (window.enhancedFormulaCalculator && window.enhancedFormulaCalculator.recalculateAll) {
+                        window.enhancedFormulaCalculator.recalculateAll();
+                    }
+                }, 500);
+                
+                // Включаем автоматический пересчет при изменении ячеек
+                jsonTableEditor.on('cellChanged', (cell, oldValue, newValue, rowIndex, colIndex) => {
+                    if (window.enhancedFormulaCalculator) {
+                        // Передаем индекс измененной строки для оптимизированного пересчета
+                        document.dispatchEvent(new CustomEvent('cell-value-changed', {
+                            detail: {
+                                rowIndex: rowIndex,
+                                colIndex: colIndex,
+                                oldValue: oldValue,
+                                newValue: newValue
+                            }
+                        }));
+                    }
+                });
+            } else {
+                console.log('⚠️ Расширенный калькулятор формул не найден');
+            }
+            
+            // Инициализация автосохранения
+            if (typeof window.EstimateAutoSaver !== 'undefined') {
+                console.log('✅ Включение автосохранения данных');
+                window.estimateAutoSaver = new window.EstimateAutoSaver({
+                    editor: jsonTableEditor,
+                    estimateId: estimateId,
+                    saveUrl: options.saveUrl,
+                    recalculateBeforeSave: true,
+                    showNotifications: true
+                });
+            } else {
+                console.log('⚠️ Автосохранение отключено (EstimateAutoSaver не найден)');
+            }
+            
+        }).catch(error => {
+            console.error('Ошибка инициализации JSON редактора:', error);
+            showErrorMessage('Ошибка инициализации редактора: ' + error.message);
+        });ener('DOMContentLoaded', function() {
+    console.log('Инициализация JSON-редактора смет v2.1');
+    
+    // Функция для ожидания загрузки всех необходимых компонентов
+    function waitForDependencies() {
+        return new Promise((resolve, reject) => {
+            const dependencies = [
+                { name: 'JsonTableEditor', global: 'JsonTableEditor' },
+                { name: 'UnifiedFormulaSystem', global: 'UnifiedFormulaSystem', optional: true },
+                { name: 'EnhancedFormulaCalculator', global: 'EnhancedFormulaCalculator', optional: true }
+            ];
+            
+            // Проверяем зависимости, которые уже загружены
+            const missingDeps = dependencies.filter(dep => 
+                !dep.optional && typeof window[dep.global] === 'undefined'
+            );
+            
+            if (missingDeps.length === 0) {
+                console.log('✅ Все обязательные зависимости загружены');
+                resolve();
+                return;
+            }
+            
+            let attempts = 0;
+            const maxAttempts = 50; // 5 секунд
+            
+            const checkInterval = setInterval(() => {
+                attempts++;
+                
+                // Проверяем зависимости, которые ещё не загружены
+                const stillMissing = dependencies.filter(dep => 
+                    !dep.optional && typeof window[dep.global] === 'undefined'
+                );
+                
+                if (stillMissing.length === 0) {
+                    clearInterval(checkInterval);
+                    console.log('✅ Все обязательные зависимости загружены');
+                    resolve();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    const missing = stillMissing.map(d => d.name).join(', ');
+                    console.warn(`⚠️ Не удалось загрузить: ${missing}`);
+                    
+                    if (typeof window.JsonTableEditor !== 'undefined') {
+                        console.log('✅ Основной компонент JsonTableEditor загружен, продолжаем без дополнительных компонентов');
+                        resolve();
+                    } else {
+                        reject(new Error(`Критические зависимости не загружены: JsonTableEditor`));
+                    }
+                }
+            }, 100);
+        });
+    }
+    
+    // Ожидаем загрузки всех компонентов перед инициализацией
+    waitForDependencies()
+        .then(() => {
+            console.log('✅ Все зависимости загружены, начинаем инициализацию редактора');
+            initializeEditor();
+            
+            // Проверяем наличие дополнительных компонентов
+            if (typeof window.UnifiedFormulaSystem !== 'undefined') {
+                console.log('✅ Унифицированная система формул доступна');
+            }
+            
+            if (typeof window.EnhancedFormulaCalculator !== 'undefined') {
+                console.log('✅ Расширенный калькулятор формул доступен');
+            }
+        })
+        .catch((error) => {
+            console.error('❌ Ошибка загрузки JsonTableEditor:', error);
+            showErrorMessage('Ошибка загрузки редактора смет');
+        });
+    
+    function initializeEditor() {
+        // Получаем ID сметы из URL или глобальной переменной
+        const estimateId = window.estimateId || getEstimateIdFromUrl();
+    
+    if (!estimateId) {
+        console.error('ID сметы не найден');
+        showErrorMessage('Не удалось определить ID сметы');
+        return;
+    }
+    
+    // Инициализируем редактор
+    try {
+        // Проверяем наличие контейнера
+        const container = document.getElementById('json-table-container');
+        if (!container) {
+            throw new Error('Контейнер #json-table-container не найден');
+        }
+        
+        // Определяем тип сметы для инициализации
+        let estimateType = window.estimateType || 'main';
+        
+        // Пробуем получить тип сметы из DOM или URL
+        if (container.dataset.estimateType) {
+            estimateType = container.dataset.estimateType;
+        } else {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('type')) {
+                estimateType = urlParams.get('type');
+            }
+        }
+        
+        // Устанавливаем тип сметы в атрибут контейнера для унификации
+        container.dataset.estimateType = estimateType;
+        console.log(`Инициализация редактора для типа сметы: ${estimateType}`);
+        
+        const options = {
+            estimateId: estimateId,
+            estimateType: estimateType, // Добавляем тип сметы в опции
+            apiUrl: `/partner/estimates/${estimateId}/json-data`,
+            updateUrl: `/partner/estimates/${estimateId}`,
+            saveUrl: `/partner/estimates/${estimateId}/json-data`,
+            autoLoad: false, // Отключаем автозагрузку, будем загружать вручную
+            autoSave: true,
+            autoSaveInterval: 30000, // 30 секунд
+            enableFormulas: true, // Включаем поддержку формул
+            enableValidation: true,
+            showHeaders: true,
+            showToolbar: true,
+            showSheetTabs: true
+        };
+        
+        const jsonTableEditor = new JsonTableEditor('json-table-container', options);
+        
+        // Устанавливаем глобальную ссылку для доступа из других скриптов
+        window.jsonTableEditor = jsonTableEditor;
+        
+        // Инициализируем редактор
+        jsonTableEditor.init().then(() => {
+            console.log('JSON редактор успешно инициализирован');
+            
+            // Загружаем данные сметы
+            loadEstimateData(jsonTableEditor, estimateId);
+            
+            // Настраиваем обработчики событий
+            setupModalHandlers(jsonTableEditor);
+            setupWorkFilters();
+            
+            // Отправляем событие инициализации для подключения универсального адаптера
+            document.dispatchEvent(new CustomEvent('jsonTableEditorInitialized', {
+                detail: {
+                    editor: jsonTableEditor,
+                    options: jsonTableEditor.options,
+                    estimateType: jsonTableEditor.options.estimateType
+                }
+            }));
+            
+            // Автосохранение отключено для упрощения
+            console.log('� Автосохранение отключено (без системы формул)');
+            
+        }).catch(error => {
+            console.error('Ошибка инициализации JSON редактора:', error);
+            showErrorMessage('Ошибка инициализации редактора: ' + error.message);
+        });
+        
+    } catch (error) {
+        console.error('Критическая ошибка при создании редактора:', error);
+        showErrorMessage('Критическая ошибка: ' + error.message);
+    }
+    } // Закрытие функции initializeEditor
+});
+
+/**
+ * Загрузка данных сметы с сервера
+ * @param {Object} jsonTableEditor - Экземпляр JsonTableEditor
+ * @param {Number} estimateId - ID сметы
+ */
+async function loadEstimateData(jsonTableEditor, estimateId) {
+    try {
+        console.log(`Загрузка данных сметы #${estimateId}`);
+        
+        // Используем корректный маршрут для JSON-данных
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            console.warn('CSRF токен не найден. Проверьте наличие мета-тега csrf-token в секции head.');
+        }
+        
+        console.log(`Отправка запроса на URL: /partner/estimates/${estimateId}/json-data`);
+        
+        const response = await fetch(`/partner/estimates/${estimateId}/json-data`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken ? csrfToken.getAttribute('content') : '',
+                'X-Requested-With': 'XMLHttpRequest', // Для идентификации Ajax запроса
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            console.error(`Ошибка HTTP: ${response.status} (${response.statusText})`);
+            
+            // Попробуем получить детали ошибки из тела ответа
+            const errorText = await response.text();
+            console.error('Текст ошибки:', errorText);
+            
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        console.log('Ответ получен успешно, обрабатываем JSON');
+        const result = await response.json();
+        
+        console.log('JSON данные получены:', result);
+        
+        if (result.success && result.data) {
+            // Проверяем структуру данных перед загрузкой
+            if (!result.data.sheets || !Array.isArray(result.data.sheets)) {
+                console.warn('Данные сметы имеют неверную структуру (отсутствует массив sheets)', result.data);
+                console.log('Полученная структура данных:', Object.keys(result.data));
+                throw new Error('Некорректная структура данных сметы');
+            }
+            
+            // Проверяем и устанавливаем тип сметы в метаданных
+            if (!result.data.meta) {
+                result.data.meta = {};
+            }
+            
+            // Если тип сметы не указан в данных, используем тип из опций
+            if (!result.data.meta.type && jsonTableEditor.options.estimateType) {
+                result.data.meta.type = jsonTableEditor.options.estimateType;
+                console.log(`Установлен тип сметы в данных: ${jsonTableEditor.options.estimateType}`);
+            }
+            
+            console.log('Загружаем данные в редактор...');
+            // Загружаем данные в редактор
+            jsonTableEditor.loadData(result.data);
+            console.log('Данные сметы успешно загружены', result.data);
+            
+            // Отправляем событие загрузки данных для универсального адаптера
+            document.dispatchEvent(new CustomEvent('jsonTableEditorDataLoaded', {
+                detail: {
+                    data: result.data,
+                    estimateId: estimateId,
+                    estimateType: result.data.meta && result.data.meta.type || jsonTableEditor.options.estimateType
+                }
+            }));
+        } else {
+            console.error('Ошибка в ответе сервера:', result);
+            throw new Error(result.message || 'Неизвестная ошибка при загрузке данных');
+        }
+        
+    } catch (error) {
+        console.error('Ошибка загрузки данных сметы:', error);
+        showErrorMessage('Ошибка загрузки данных сметы: ' + error.message);
+        
+        console.log('Загрузка пустого шаблона как запасной вариант...');
+        // В случае ошибки загружаем пустой шаблон
+        const emptyTemplate = createEmptyTemplate();
+        
+        try {
+            jsonTableEditor.loadData(emptyTemplate);
+            console.log('Пустой шаблон успешно загружен');
+        } catch (templateError) {
+            console.error('Ошибка загрузки пустого шаблона:', templateError);
+            showErrorMessage('Не удалось загрузить редактор. Пожалуйста, обновите страницу.');
+        }
+    }
+}
+
+/**
+ * Получение ID сметы из URL
+ * @returns {Number|null} ID сметы
+ */
+function getEstimateIdFromUrl() {
+    const path = window.location.pathname;
+    const matches = path.match(/\/estimates\/(\d+)/);
+    return matches ? parseInt(matches[1]) : null;
+}
+
+/**
+ * Создание пустого шаблона сметы
+ * @returns {Object} Пустой шаблон
+ */
+function createEmptyTemplate() {
+    return {
+        sheets: [
+            {
+                name: 'Основной',
+                data: [
+                    {
+                        '_id': generateUniqueId(),
+                        '_type': 'header',
+                        'name': 'НОВЫЙ РАЗДЕЛ',
+                        '_protected': true
+                    },
+                    {
+                        '_id': generateUniqueId(),
+                        'name': 'Новая работа',
+                        'unit': 'раб',
+                        'quantity': 1,
+                        'price': 0,
+                        'sum': '=quantity*price'
+                    }
+                ]
+            }
+        ],
+        currentSheet: 0,
+        meta: {
+            created_at: new Date().toISOString(),
+            type: 'main',
+            version: '1.0'
+        }
+    };
+}
+
+/**
+ * Настройка обработчиков модальных окон
+ * @param {Object} jsonTableEditor - Экземпляр JsonTableEditor
+ */
+function setupModalHandlers(jsonTableEditor) {
+    // Обработчик кнопки добавления раздела (через модальное окно)
+    const confirmAddSectionBtn = document.getElementById('confirmAddSection');
+    if (confirmAddSectionBtn) {
+        confirmAddSectionBtn.addEventListener('click', function() {
+            const sectionName = document.getElementById('customSectionName').value.trim();
+            if (sectionName) {
+                // Закрываем модальное окно
+                bootstrap.Modal.getInstance(document.getElementById('sectionSelectorModal')).hide();
+                
+                // Добавляем новый раздел
+                jsonTableEditor.addSection(sectionName);
+                
+                // Сбрасываем поле ввода
+                document.getElementById('customSectionName').value = '';
+                
+                console.log('Добавлен раздел:', sectionName);
+            } else {
+                alert('Пожалуйста, введите название раздела');
+            }
+        });
+    }
+    
+    // Обработчик кнопки добавления работы (через модальное окно)
+    const confirmAddWorkBtn = document.getElementById('confirmAddWork');
+    if (confirmAddWorkBtn) {
+        confirmAddWorkBtn.addEventListener('click', function() {
+            const workName = document.getElementById('customWorkName').value.trim();
+            const workUnit = document.getElementById('workUnitSelect').value;
+            const workQuantity = parseFloat(document.getElementById('workQuantity').value) || 1;
+            
+            if (workName) {
+                // Закрываем модальное окно
+                bootstrap.Modal.getInstance(document.getElementById('workTypeSelectorModal')).hide();
+                
+                // Добавляем новую работу
+                jsonTableEditor.addRow({
+                    name: workName,
+                    unit: workUnit,
+                    quantity: workQuantity,
+                    price: 0,
+                    sum: '=quantity*price'
+                });
+                
+                // Сбрасываем поля ввода
+                document.getElementById('customWorkName').value = '';
+                document.getElementById('workQuantity').value = '1';
+                
+                console.log('Добавлена работа:', workName);
+            } else {
+                alert('Пожалуйста, введите название работы');
+            }
+        });
+    }
+}
+
+/**
+ * Настройка фильтрации и поиска в модальном окне работ
+ */
+function setupWorkFilters() {
+    const workSearchInput = document.getElementById('workSearchInput');
+    if (workSearchInput) {
+        workSearchInput.addEventListener('input', function() {
+            filterWorkItems();
+        });
+    }
+    
+    const sectionFilterSelect = document.getElementById('sectionFilterSelect');
+    if (sectionFilterSelect) {
+        sectionFilterSelect.addEventListener('change', function() {
+            filterWorkItems();
+        });
+    }
+}
+
+/**
+ * Фильтрация списка работ в модальном окне
+ */
+function filterWorkItems() {
+    const searchTerm = document.getElementById('workSearchInput').value.toLowerCase();
+    const selectedSection = document.getElementById('sectionFilterSelect').value;
+    
+    const workItems = document.querySelectorAll('.work-item');
+    
+    workItems.forEach(item => {
+        const itemName = item.dataset.name.toLowerCase();
+        const itemSection = item.dataset.section;
+        
+        const matchesSearch = !searchTerm || itemName.includes(searchTerm);
+        const matchesSection = !selectedSection || itemSection === selectedSection;
+        
+        if (matchesSearch && matchesSection) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * Отображение сообщения об ошибке
+ * @param {String} message - Текст сообщения
+ */
+function showErrorMessage(message) {
+    console.error(message);
+    
+    // Показываем alert как fallback
+    alert(message);
+    
+    // Попытаемся показать более красивое уведомление, если доступно
+    if (typeof JsonTableUIHelpers !== 'undefined' && JsonTableUIHelpers.showNotification) {
+        JsonTableUIHelpers.showNotification(message, 'error');
+    }
+}
+
+/**
+ * Генерация уникального идентификатора
+ * @returns {String} - Уникальный идентификатор
+ */
+function generateUniqueId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}

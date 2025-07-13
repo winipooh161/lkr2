@@ -1,0 +1,237 @@
+/* Стили для экспорта смет */
+
+/* Улучшение выпадающих меню */
+.estimate-action-dropdown .dropdown-menu {
+    min-width: 280px;
+    padding: 0.5rem 0;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.estimate-action-dropdown .dropdown-header {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.estimate-action-dropdown .dropdown-item-text {
+    padding: 0.25rem 1rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.estimate-action-dropdown .dropdown-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.estimate-action-dropdown .dropdown-item:hover {
+    background-color: #f8f9fa;
+    transform: translateX(2px);
+}
+
+/* Цветовые акценты для иконок */
+.estimate-action-dropdown .text-success {
+    color: #198754 !important;
+}
+
+.estimate-action-dropdown .text-danger {
+    color: #dc3545 !important;
+}
+
+.estimate-action-dropdown .text-primary {
+    color: #0d6efd !important;
+}
+
+.estimate-action-dropdown .text-info {
+    color: #0dcaf0 !important;
+}
+
+/* Стили для быстрых кнопок экспорта */
+.export-quick-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.export-quick-btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    transition: all 0.15s ease-in-out;
+    text-decoration: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.export-quick-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.export-quick-btn-excel {
+    background-color: #198754;
+    color: white;
+    border-color: #198754;
+}
+
+.export-quick-btn-excel:hover {
+    background-color: #157347;
+    border-color: #146c43;
+    color: white;
+}
+
+.export-quick-btn-pdf {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.export-quick-btn-pdf:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
+    color: white;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .estimate-action-dropdown .dropdown-menu {
+        min-width: 250px;
+    }
+    
+    .export-quick-buttons {
+        flex-direction: column;
+    }
+    
+    .export-quick-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Анимация загрузки при экспорте */
+.export-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.export-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1rem;
+    height: 1rem;
+    margin: -0.5rem 0 0 -0.5rem;
+    border: 2px solid transparent;
+    border-top: 2px solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Улучшение таблицы */
+.estimates-table .table th {
+    background-color: #f8f9fa;
+    border-top: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #495057;
+    padding: 1rem 0.75rem;
+}
+
+.estimates-table .table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-color: #dee2e6;
+}
+
+.estimates-table .table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Бейджи статусов */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.5rem;
+}
+
+/* Tooltip для кнопок экспорта */
+[data-bs-toggle="tooltip"] {
+    cursor: help;
+}
+
+/* Групповые действия (если будут добавлены в будущем) */
+.bulk-actions {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+.bulk-actions.show {
+    display: block;
+}
+
+.bulk-export-btn {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Прогресс бар для экспорта */
+.export-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    display: none;
+}
+
+.export-progress.show {
+    display: block;
+}
+
+.export-progress .progress {
+    height: 4px;
+    border-radius: 0;
+}
+
+.export-progress .progress-bar {
+    background-color: #0d6efd;
+    animation: progress-animation 2s ease-in-out infinite;
+}
+
+@keyframes progress-animation {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
+}
+
+/* Уведомления об экспорте */
+.export-notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.export-notification .alert {
+    margin-bottom: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}

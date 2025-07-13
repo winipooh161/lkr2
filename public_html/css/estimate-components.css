@@ -1,0 +1,137 @@
+/**
+ * Стили для компонентов системы управления сметами
+ * Версия: 1.0
+ * Дата: 11.07.2025
+ */
+
+/* Индикатор сохранения */
+.save-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    z-index: 9999;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.save-indicator.visible {
+    display: flex;
+    align-items: center;
+}
+
+.save-indicator::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.save-indicator.saving::before {
+    background-color: #f39c12;
+    animation: pulse 1s infinite;
+}
+
+.save-indicator.saved::before {
+    background-color: #2ecc71;
+}
+
+.save-indicator.error::before {
+    background-color: #e74c3c;
+}
+
+.save-indicator.modified::before {
+    background-color: #3498db;
+}
+
+.save-indicator.offline::before {
+    background-color: #95a5a6;
+}
+
+/* Индикатор прогресса */
+.save-progress-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 9999;
+    display: none;
+}
+
+.save-progress-container.visible {
+    display: block;
+}
+
+.save-progress {
+    height: 100%;
+    width: 0;
+    background-color: #3498db;
+    transition: width 0.3s ease;
+}
+
+/* Скрытие дублирующихся кнопок */
+.duplicate-removed {
+    display: none !important;
+}
+
+.duplicate-processed {
+    position: relative;
+}
+
+/* Анимации */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Уведомления */
+.error-notification,
+.warning-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 16px;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    z-index: 10000;
+    max-width: 300px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    animation: fade-in 0.3s ease;
+}
+
+.error-notification {
+    background-color: #e74c3c;
+}
+
+.warning-notification {
+    background-color: #f39c12;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Дополнительные стили для совместимости с темной темой */
+@media (prefers-color-scheme: dark) {
+    .save-indicator {
+        background-color: rgba(30, 30, 30, 0.9);
+        border-color: #444;
+        color: #eee;
+    }
+    
+    .error-notification,
+    .warning-notification {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    }
+}

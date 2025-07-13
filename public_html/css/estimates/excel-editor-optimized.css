@@ -1,0 +1,209 @@
+/**
+ * Оптимизированные стили для редактора смет
+ * Версия: 1.0
+ * Дата: 10.07.2025
+ */
+
+/* Улучшенный внешний вид редактора */
+.excel-editor-container {
+    position: relative;
+    width: 100%;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.excel-editor-container .handsontable {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Стили заголовков */
+.handsontable th {
+    background-color: #343a40;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Стили для строк с нечетными номерами */
+.handsontable tr:nth-child(odd) td {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Стили для разных типов строк */
+.header-row {
+    background-color: #e9ecef !important;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.total-row {
+    background-color: #f8f9fa !important;
+    font-weight: bold;
+    border-top: 2px solid #dee2e6 !important;
+    border-bottom: 2px solid #dee2e6 !important;
+}
+
+.total-cell {
+    color: #007bff !important;
+}
+
+/* Оптимизированные стили для читаемости */
+.handsontable td {
+    font-size: 14px;
+    padding: 4px 6px !important;
+    line-height: 1.4;
+}
+
+/* Стили для колонок по типам данных */
+.handsontable .htNumeric {
+    text-align: right;
+}
+
+.handsontable .htDimmed {
+    color: #999;
+}
+
+/* Стили для ячеек с ошибками */
+.cell-error {
+    background-color: #ffebee !important;
+    color: #d32f2f !important;
+}
+
+.cell-warning {
+    background-color: #fff8e1 !important;
+}
+
+/* Анимации для изменений */
+@keyframes cell-updated {
+    0% { background-color: rgba(33, 150, 243, 0.2); }
+    100% { background-color: transparent; }
+}
+
+.cell-updated {
+    animation: cell-updated 1s ease-in-out;
+}
+
+/* Иконки и состояния редактора */
+.excel-editor-header {
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.excel-editor-toolbar {
+    display: flex;
+    gap: 10px;
+    padding: 5px 10px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.excel-editor-toolbar .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Стили для табов листов */
+.excel-sheets-tabs {
+    display: flex;
+    overflow-x: auto;
+    background-color: #e9ecef;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.excel-sheet-tab {
+    padding: 8px 15px;
+    border-right: 1px solid #dee2e6;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.excel-sheet-tab.active {
+    background-color: #fff;
+    border-top: 2px solid #007bff;
+    border-bottom: none;
+    margin-bottom: -1px;
+    font-weight: bold;
+}
+
+/* Адаптивные стили для мобильных устройств */
+@media (max-width: 768px) {
+    .excel-editor-toolbar {
+        flex-wrap: wrap;
+    }
+    
+    .excel-sheet-tab {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .handsontable td {
+        font-size: 12px;
+        padding: 3px 4px !important;
+    }
+}
+
+/* Индикатор изменений */
+.modified-indicator {
+    color: #dc3545;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.card-header.modified .modified-indicator {
+    display: inline;
+}
+
+/* Стили для улучшения отзывчивости интерфейса */
+.btn-group-responsive {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Панель предпросмотра для мобильных */
+.mobile-preview-panel {
+    display: none;
+    padding: 10px;
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 576px) {
+    .mobile-preview-panel {
+        display: block;
+    }
+}
+
+/* Стили для блокировки редактора при выполнении операций */
+.editor-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.editor-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
